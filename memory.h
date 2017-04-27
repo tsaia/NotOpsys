@@ -6,9 +6,9 @@
 class process{
 public:
 	process();
-	process(int s, char n): size(s), name(n){};
+	process(char n, int s): size(s), name(n){};
 	int getSize(){return size;}
-	int getName(){return name;}
+	char getName(){return name;}
 
 private:
 	int size;
@@ -31,10 +31,10 @@ public:
 	};
 
 	void printMem();
-	int defrag();
+	int defrag(int time);
 	void test();
 	void updateDisplay();
-	void remove(process p);
+	int remove(process p);
 	int addNF(process p);
 	int addBF(process p);
 	int addWF(process p);

@@ -71,8 +71,6 @@ int memory::addNF(process p){
 	char toAdd = p.getName();
 	int size = p.getSize();
 	if (size > openFrames){
-		//move print statement to main 
-		std::cout << "Cannot place process " << toAdd << " -- skipped!";
 		return 0;
 	}
 	int start = 0, test = 0;
@@ -108,6 +106,7 @@ int memory::addNF(process p){
 	}
 }
 
+//best fit
 int memory::addBF(process p){
 	//RETURN VALUES: 0 - CAN'T ADD, 1 - ADDED, 2 - DEFRAG NEEDED
 	//assume process has size and name
@@ -166,7 +165,7 @@ int memory::addBF(process p){
 
 }
 
-
+//worst fit
 int memory::addWF(process p){
 	//copied from bestfit but max instead of min
 	//RETURN VALUES: 0 - CAN'T ADD, 1 - ADDED, 2 - DEFRAG NEEDED
@@ -246,26 +245,23 @@ int memory::addNC(process p){
 	return 1;
 }
 
-void memory::remove(process p){
+int memory::remove(process p){
 	//could be better
+
 	char toRemove = p.getName();
-	int start = 0;
-	while (flat[start] != toRemove){
-		start++;
-		if (start == totalFrames){
-			std::cout << "process not found\n";
-			return;
+	int removed = 0;
+	for (int i = 0; i < totalFrames; i++){
+		if (flat[i] == toRemove){
+			flat[i] = '.';
+			removed++;
+			openFrames++;
 		}
 	}
-	while (flat[start] == toRemove){
-		flat[start] = '.';
-		start++;
-		openFrames++;
-	}
 	updateDisplay();
+	return removed;
 }
 
-int memory::defrag(){
+int memory::defrag(int time){
 	int start = 0, replace, replaceuntil, replacelength, timetaken = 0;
 	//add a list of moved processes
 	std::vector<char> moved;
@@ -298,7 +294,8 @@ int memory::defrag(){
 			timetaken+=t_memmove;
 		}
 	}
-	std::cout << "Defragmentation complete (moved " << timetaken << " frames:";
+	//print here instead of in main to get those sick moved frames
+	std::cout << "time " << time+timetaken << "ms: Defragmentation complete (moved " << timetaken << " frames:";
 	for (int i = 0; i < moved.size(); i++){
 		std::cout << " " << moved[i];
 		if (i != moved.size() - 1){//formatting is dumb 
@@ -311,6 +308,7 @@ int memory::defrag(){
 }
 
 void memory::updateDisplay(){
+	//update the display with the contents of the flat memory
 	int k = 0;
 	for (int i = 0; i < lines; i++){
 		for (int j = 0; j < frames; j++){
