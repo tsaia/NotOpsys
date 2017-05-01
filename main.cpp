@@ -10,7 +10,7 @@
 
 
 void add(memory &nfmem, process &p){
-	int result = nfmem.addBF(p);
+	int result = nfmem.addNC(p);
 	int time = 0;
 	if (result == 0){
 		std::cout << "time "<< time << "ms: Cannot place process " << p.getName() << " -- skipped!\n";

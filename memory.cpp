@@ -296,10 +296,11 @@ int memory::addNC(process p){
 		while (flat[start] != '.'){
 			start++;
 		}
-		while (flat[start] == '.'){
+		while (flat[start] == '.' && remaining > 0){
 			flat[start] = toAdd;
 			start++;
 			remaining--;
+			openFrames--;
 		}
 	}
 	updateDisplay();
