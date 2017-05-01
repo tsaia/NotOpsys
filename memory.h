@@ -2,6 +2,7 @@
 #include <iomanip>
 #include <fstream>
 #include <vector>
+#include <list>
 
 class process{
 public:
@@ -28,6 +29,8 @@ public:
 		flat = v2;
 		openFrames = l*f;
 		totalFrames = l*f;
+
+		queue.push_back('.');
 	};
 
 	void printMem();
@@ -35,6 +38,7 @@ public:
 	void test();
 	void updateDisplay();
 	int remove(process p);
+	int addNF2(process p);
 	int addNF(process p);
 	int addBF(process p);
 	int addWF(process p);
@@ -51,6 +55,9 @@ private:
 	std::vector<std::vector<char> > display;
 	int openFrames;
 
+	//add a queueueue for most recent memory
+	std::list<char> queue;
+	//remind me to actually clear the queue sometime lol
 
 	
 };

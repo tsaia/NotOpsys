@@ -64,8 +64,10 @@ void memory::printMem(){
 	std::cout << std::endl;
 }
 
-//next fit
-int memory::addNF(process p){
+
+
+//copied and pasted the old method for a specific case rather than fixing a bug :^}
+int memory::addNF2(process p){
 	//RETURN VALUES: 0 - CAN'T ADD, 1 - ADDED, 2 - DEFRAG NEEDED
 	//assume process has size and name
 	char toAdd = p.getName();
@@ -98,8 +100,67 @@ int memory::addNF(process p){
 		}else{
 			start++;
 			if (start == totalFrames){
-				//move print statement to main
-				std::cout << "Cannot place process " << toAdd << " -- starting defragmentation\n";
+				return 0;
+			}
+		}
+	}
+}
+
+//next fit
+int memory::addNF(process p){
+	//RETURN VALUES: 0 - CAN'T ADD, 1 - ADDED, 2 - DEFRAG NEEDED
+	//assume process has size and name
+	char prev = queue.back();
+	char toAdd = p.getName();
+	int size = p.getSize();
+	if (size > openFrames){
+		return 0;
+	}
+	int start = 0, test = 0;
+	while (true){//I guess it could be while (start < totalFrames) but eh
+		if(prev != '.'){
+			while (start < totalFrames && flat[start]!=prev){
+				start++;
+			}
+			while (start < totalFrames && flat[start]==prev){
+				start++;				
+			}
+		}
+		if (start == totalFrames){
+			queue.push_back('.');
+			std::cout << "here\n\n";
+			if (addNF2(p) == 1){
+				return 1;
+			}
+			return 2;
+		}
+		bool canAdd = true;
+		while (test < size){
+			if (test+start >= totalFrames || flat[start+test] != '.'){
+				canAdd = false;
+				break;
+			}	
+			test++;
+		}
+		if (canAdd){
+			test = 0;
+			while (test < size){
+				flat[start+test] = toAdd;
+				test++;
+				openFrames--;
+			}
+
+			queue.push_back(toAdd);
+			updateDisplay();
+			return 1;
+		}else{
+			start++;
+			if (start == totalFrames){
+				queue.push_back('.');
+				std::cout << "here\n\n";
+				if (addNF2(p) == 1){
+					return 1;
+				}
 				return 2;
 			}
 		}
@@ -258,6 +319,13 @@ int memory::remove(process p){
 		}
 	}
 	updateDisplay();
+	std::cout << "Removed process " << p.getName() << "\n";
+	printMem();
+	//top of the queue always needs to be a period but want to eliminate extra periods
+	//added 
+	queue.remove(toRemove);
+	queue.remove('.');
+	queue.push_front('.');
 	return removed;
 }
 
