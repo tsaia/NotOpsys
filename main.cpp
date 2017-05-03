@@ -92,6 +92,60 @@ void add(memory &nfmem, process &p){
 	}
 }
 
+void updateTimes(std::vector<process> &processes, int add){
+	for (int i = 0; i <processes.size(); i++){
+		processes[i].update(add);
+	}
+}
+
+void nf(std::vector<process> processes){
+	memory mem(8,32);
+	int time = 0, result = 0;
+	process current('.', 0);
+	while (time < 3000){//temp for now
+		for (int i = 0; i < processes.size(); i++){
+			current = processes[i];
+		//		std::cout << "TIME: " << time << "\tPROCESS: " << current.getName() << "\tARRIVAL: "<< current.getArrival(0) << "\n";
+			for (int q = 0; q < current.arrivals(); q++){
+				if (current.getArrival(q) == time){
+					std::cout << "time " << time << "ms: Process " << current.getName() << " arrived (requires "
+						<< current.getSize() << " frames)\n";
+					result = mem.addNF(current);
+					if (result == 0){
+						std::cout << "time "<< time << "ms: Cannot place process " << current.getName() << " -- skipped!\n";
+					}
+					else if (result == 1){
+						std::cout << "time "<< time << "ms: Placed process " << current.getName() << ":\n";
+						mem.printMem();
+					}
+					else if (result == 2){
+						std::cout << "time "<< time << "ms: Cannot place process " << current.getName() << " -- starting defragmentation\n";
+						int def = mem.defrag(time);//prints the defrag statement here
+						time += def;
+						mem.printMem();
+						std::cout << "time " << time << "ms: Placed process " << current.getName() << ": \n";
+					//	time+=def;
+						mem.addNF(current);
+						mem.printMem();
+
+						updateTimes(processes, def);
+					}
+					current.removeArrival();
+				}
+			}
+			for (int q = 0; q < current.departures(); q++){
+				if (current.getDeparture(q) == time){
+					mem.remove(current);
+					current.removeDeparture();
+					std::cout << "time " << time << "ms: Process " << current.getName() << " removed:\n";
+					mem.printMem();
+				}
+			}
+		}
+	time++;
+	}
+}
+
 void teststuff(){
 	//this is all just testing stuff
 	memory mem(8, 32);
@@ -135,34 +189,6 @@ void teststuff(){
 
 }
 int main(int argc, char** argv){
-// 	if (argc < 2){
-// 		std::cout << "Usage: ./a.out <file>\n";
-// 		return EXIT_FAILURE;
-// 	}
-//   	std::ifstream inFile;
-//   	inFile.open(argv[1]);
-//   	if (!inFile.good()) {
-//     	std::cerr<<"ERROR: BAD FILE"<<std::endl;
-// 		return EXIT_FAILURE;
-// 	}
-
-// 	int numprocesses;
-// 	char line[128];
-// 	inFile.getline(line, 128);
-
-// 	std::cout << "\n\n" << line << "\n\n";
-// 	numprocesses = atoi(line);
-// //		std::cout << numprocesses;
-
-// 	while (inFile){
-// 		inFile.getline(line, 128);
-// 		char delim = ' ';
-// 		char name = line[0];
-// 		int size, start ,end;
-
-// 		process P(name, size);
-// 		std::cout << line << "\n";
-// 	}
 
 	if(argc < 2) {
 		perror("ERROR Invalid arguments\n");
@@ -206,7 +232,7 @@ int main(int argc, char** argv){
 	else{
 		perror("ERROR could not open input file '%s' for reading\n");
 		exit(EXIT_FAILURE);
-	}
+	}	
 	// end ip reading
 
 	printf("TEST: GOT %d proccesses!\n", processes.size());
@@ -217,49 +243,16 @@ int main(int argc, char** argv){
 		for (int j=0; j<processes[i].getTimesSize(); j++){
 			printf("\t%d arrival:'%d' departure:'%d'\n", j, processes[i].getArrival(j), processes[i].getDeparture(j));
 		}
+
 	}
 	fflush(stdout);
 	fflush (stderr);
 	
 
 
-	// //queue or something to do processes
-	// //map of maps?? map<int time, map<process, string action> >
-	// //action says remove or add
-	// //we'll see
-	// //or we add arrival times to process class and iterate through time idk
-
-	// //read in number of processes from file
-	// int numprocesses = 6;
-	// memory nfmem(8, 32);
-
-	// //tbh gonna copy and paste this 4 times once it's correct
-	// std::cout << "time " << time << "ms: Simulator started (Contiguous -- Next-Fit)\n";
-	// for (int i = 0; i < numprocesses; i++){//not actually the right loop conditions but im tired
-	// 	process Test('T', 10);
-	// 	process currentprocess = Test;
-	// 	std::cout << "time " << time << "ms: Process " << currentprocess.getName() << " arrived (requires " << currentprocess.getSize() << " frames)\n";
-	// 	int result = nfmem.addNF(currentprocess);
-	// 	if (result == 0){
-	// 		std::cout << "time "<< time << "ms: Cannot place process " << currentprocess.getName() << " -- skipped!\n";
-	// 	}
-	// 	else if (result == 1){
-	// 		std::cout << "time "<< time << "ms: Placed process " << currentprocess.getName() << ":\n";
-	// 		nfmem.printMem();
-	// 	}
-	// 	else if (result == 2){
-	// 		std::cout << "time "<< time << "ms: Cannot place process " << currentprocess.getName() << " -- starting defragmentation\n";
-	// 		time += nfmem.defrag(time);
-	// 		nfmem.printMem();
-	// 		std::cout << "time " << time << "ms: Placed process " << currentprocess.getName() << ": \n";
-	// 		nfmem.addNF(currentprocess);
-	// 		nfmem.printMem();
-	// 	}
-
-
-	// }
+	nf(processes);
 	std::cout << "time " << time << "ms: Simulator ended (Contiguous -- Next-Fit)\n";
 
-	teststuff();
+	//teststuff();
 	return 1;
 }
