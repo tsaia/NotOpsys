@@ -63,8 +63,9 @@ public:
 	int addNC(process p);
 
 private:
-	int frames;
+	
 	int lines;
+	int frames;
 	int totalFrames;
 
 	//flat is a 1d vector that's easier to work with for actually manipulating the data

@@ -58,7 +58,7 @@ process::process(std::string string){
 }
 
 void process::update(int time){
-	int i;
+	unsigned int i;
 	for (i = 0; i < arrivalTimes.size(); i++){
 		arrivalTimes[i]+=time;
 	}
@@ -69,7 +69,7 @@ void process::update(int time){
 
 
 void process::removeArrival(){
-	for (int i = 0; i < arrivalTimes.size()-1; i++){
+	for (unsigned int i = 0; i < arrivalTimes.size()-1; i++){
 		arrivalTimes[i] = arrivalTimes[i+1];
 	}
 //	arrivalTimes[arrivalTimes.size()-1] = 0;
@@ -77,7 +77,7 @@ void process::removeArrival(){
 }
 
 void process::removeDeparture(){
-	for (int i = 0; i < arrivalTimes.size()-1; i++){
+	for (unsigned int i = 0; i < arrivalTimes.size()-1; i++){
 		departureTimes[i] = departureTimes[i+1];
 	}
 //	departureTimes[arrivalTimes.size()-1] = 0;
@@ -437,13 +437,13 @@ int memory::defrag(int time){
 	}
 	//print here instead of in main to get those sick moved frames
 	std::cout << "time " << time+timetaken << "ms: Defragmentation complete (moved " << timetaken << " frames:";
-	for (int i = 0; i < moved.size(); i++){
+	for (unsigned int i = 0; i < moved.size(); i++){
 		std::cout << " " << moved[i];
 		if (i != moved.size() - 1){//formatting is dumb 
 			std::cout << ",";
 		}
 	}
-	std::cout << ")	\n";
+	std::cout << ")\n";
 	updateDisplay();	
 	return timetaken;
 }

@@ -1,3 +1,10 @@
+
+/*
+  Tim Saia        661258600   saiat@rpi.edu
+  Sean Waclawik   661414058   waclas@rpi.edu
+  Nate Wheeler    661486023   wheeln@rpi.edu
+*/
+
 #include <iostream>
 #include <iomanip>
 #include <fstream>
@@ -68,7 +75,7 @@ int readfile(char* file, std::vector<process> processes){
 		perror("ERROR could not open input file '%s' for reading\n");
 		exit(EXIT_FAILURE);
 	}
-
+	return 0;
 }
 
 
@@ -93,7 +100,7 @@ void add(memory &nfmem, process &p){
 }
 
 void updateTimes(std::vector<process> &processes, int add){
-	for (int i = 0; i <processes.size(); i++){
+	for (unsigned int i = 0; i <processes.size(); i++){
 		processes[i].update(add);
 	}
 }
@@ -104,11 +111,11 @@ void nf(std::vector<process> processes){
 	int time = 0, result = 0;
 	process current('.', 0);
 	int lastDepart = 0;
-	for (int j = 0; j < processes.size(); j++){
+	for (unsigned int j = 0; j < processes.size(); j++){
 		lastDepart = std::max(lastDepart, processes[j].lastD());
 	}
 	while (time < lastDepart+1){//temp for now
-		for (int i = 0; i < processes.size(); i++){
+		for (unsigned int i = 0; i < processes.size(); i++){
 			current = processes[i];
 		//		std::cout << "TIME: " << time << "\tPROCESS: " << current.getName() << "\tARRIVAL: "<< current.getArrival(0) << "\n";
 			for (int q = 0; q < current.arrivals(); q++){
@@ -152,7 +159,7 @@ void nf(std::vector<process> processes){
 		}
 	time++;
 	}
-	std::cout << "time " << time-1 << " ms: Simulator ended (Contiguous -- Next-Fit)\n";
+	std::cout << "time " << time-1 << "ms: Simulator ended (Contiguous -- Next-Fit)\n";
 }
 
 void bf(std::vector<process> processes){
@@ -162,11 +169,11 @@ void bf(std::vector<process> processes){
 	int time = 0, result = 0;
 	process current('.', 0);
 	int lastDepart = 0;
-	for (int j = 0; j < processes.size(); j++){
+	for (unsigned int j = 0; j < processes.size(); j++){
 		lastDepart = std::max(lastDepart, processes[j].lastD());
 	}
 	while (time < lastDepart+1){//temp for now
-		for (int i = 0; i < processes.size(); i++){
+		for (unsigned int i = 0; i < processes.size(); i++){
 			current = processes[i];
 		//		std::cout << "TIME: " << time << "\tPROCESS: " << current.getName() << "\tARRIVAL: "<< current.getArrival(0) << "\n";
 			for (int q = 0; q < current.arrivals(); q++){
@@ -201,7 +208,6 @@ void bf(std::vector<process> processes){
 					int removed = mem.remove(current);
 					current.removeDeparture();
 					if (removed > 0){//lazy fix
-						std::cout << "REMOVED: " << removed << "\n\n\n";
 						std::cout << "time " << time << "ms: Process " << current.getName() << " removed:\n";
 						mem.printMem();
 					}
@@ -210,7 +216,7 @@ void bf(std::vector<process> processes){
 		}
 	time++;
 	}
-	std::cout << "time " << time-1 << " ms: Simulator ended (Contiguous -- Best-Fit)\n";
+	std::cout << "time " << time-1 << "ms: Simulator ended (Contiguous -- Best-Fit)\n";
 }
 
 
@@ -221,11 +227,11 @@ void wf(std::vector<process> processes){
 	int time = 0, result = 0;
 	process current('.', 0);
 	int lastDepart = 0;
-	for (int j = 0; j < processes.size(); j++){
+	for (unsigned int j = 0; j < processes.size(); j++){
 		lastDepart = std::max(lastDepart, processes[j].lastD());
 	}
 	while (time < lastDepart+1){//temp for now
-		for (int i = 0; i < processes.size(); i++){
+		for (unsigned int i = 0; i < processes.size(); i++){
 			current = processes[i];
 		//		std::cout << "TIME: " << time << "\tPROCESS: " << current.getName() << "\tARRIVAL: "<< current.getArrival(0) << "\n";
 			for (int q = 0; q < current.arrivals(); q++){
@@ -270,7 +276,7 @@ void wf(std::vector<process> processes){
 	time++;
 	}
 
-	std::cout << "time " << time-1 << " ms: Simulator ended (Contiguous -- Worst-Fit)\n";
+	std::cout << "time " << time-1 << "ms: Simulator ended (Contiguous -- Worst-Fit)\n";
 }
 
 
@@ -282,11 +288,11 @@ void nc(std::vector<process> processes){
 	int time = 0, result = 0;
 	process current('.', 0);
 	int lastDepart = 0;
-	for (int j = 0; j < processes.size(); j++){
+	for (unsigned int j = 0; j < processes.size(); j++){
 		lastDepart = std::max(lastDepart, processes[j].lastD());
 	}
 	while (time < lastDepart+1){//temp for now
-		for (int i = 0; i < processes.size(); i++){
+		for (unsigned int i = 0; i < processes.size(); i++){
 			current = processes[i];
 		//		std::cout << "TIME: " << time << "\tPROCESS: " << current.getName() << "\tARRIVAL: "<< current.getArrival(0) << "\n";
 			for (int q = 0; q < current.arrivals(); q++){
@@ -319,59 +325,15 @@ void nc(std::vector<process> processes){
 	time++;
 	}
 
-	std::cout << "time " << time-1 << " ms: Simulator ended (Non-contiguous)\n";
+	std::cout << "time " << time-1 << "ms: Simulator ended (Non-contiguous)\n";
 }
 
-
-void teststuff(){
-	//this is all just testing stuff
-	memory mem(8, 32);
-	std::cout << "done\n";
-	process A('A', 45);
-	process B('B', 28);
-	process C('C', 58);
-	process D('D', 86);
-	process E('E', 14);
-	process F('F', 24);
-	process G('G', 13);
-	process J('J', 46);
-
-
-	//all the commands from input 1, just not in input form
-
-	add(mem, A);
-	add(mem, B);
-	add(mem, C);
-	add(mem, D);
-	add(mem, E);
-	add(mem, F);
-	mem.remove(A);
-	add(mem, A);
-	add(mem, G);
-	mem.remove(A);
-	mem.remove(F);
-	add(mem, F);
-	add(mem, J);
-	mem.remove(D);
-	mem.remove(C);
-	mem.remove(F);
-	add(mem, C);
-	mem.remove(C);
-	add(mem, D);
-	mem.remove(E);
-	mem.remove(J);
-	mem.remove(D);
-	mem.remove(B);
-
-
-}
 int main(int argc, char** argv){
 
 	if(argc < 2) {
 		perror("ERROR Invalid arguments\n");
 		exit(EXIT_FAILURE);
 	}
-	int time = 0;
 	std::vector<process> processes;
 
 	// take the args and read the file into our vector of proccesses
@@ -412,16 +374,16 @@ int main(int argc, char** argv){
 	}	
 	// end ip reading
 
-	printf("TEST: GOT %d proccesses!\n", processes.size());
+	// printf("TEST: GOT %d proccesses!\n", processes.size());
 
-	for (int i=0; i<processes.size(); i++){
-		printf("TEST: process %d = %c, size=%d\n", i, processes[i].getName(), processes[i].getSize());
+	// for (int i=0; i<processes.size(); i++){
+	// 	printf("TEST: process %d = %c, size=%d\n", i, processes[i].getName(), processes[i].getSize());
 
-		for (int j=0; j<processes[i].getTimesSize(); j++){
-			printf("\t%d arrival:'%d' departure:'%d'\n", j, processes[i].getArrival(j), processes[i].getDeparture(j));
-		}
+	// 	for (int j=0; j<processes[i].getTimesSize(); j++){
+	// 		printf("\t%d arrival:'%d' departure:'%d'\n", j, processes[i].getArrival(j), processes[i].getDeparture(j));
+	// 	}
 
-	}
+	// }
 	fflush(stdout);
 	fflush (stderr);
 	
