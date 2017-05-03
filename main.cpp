@@ -135,7 +135,7 @@ void nf(std::vector<process> processes){
 						int def = mem.defrag(time);//prints the defrag statement here
 						time += def;
 						mem.printMem();
-						std::cout << "time " << time << "ms: Placed process " << current.getName() << ": \n";
+						std::cout << "time " << time << "ms: Placed process " << current.getName() << ":\n";
 					//	time+=def;
 						mem.addNF(current);
 						mem.printMem();
@@ -159,7 +159,7 @@ void nf(std::vector<process> processes){
 		}
 	time++;
 	}
-	std::cout << "time " << time-1 << "ms: Simulator ended (Contiguous -- Next-Fit)\n";
+	std::cout << "time " << time-1 << "ms: Simulator ended (Contiguous -- Next-Fit)\n\n";
 }
 
 void bf(std::vector<process> processes){
@@ -193,10 +193,12 @@ void bf(std::vector<process> processes){
 						int def = mem.defrag(time);//prints the defrag statement here
 						time += def;
 						mem.printMem();
-						std::cout << "time " << time << "ms: Placed process " << current.getName() << ": \n";
+						std::cout << "time " << time << "ms: Placed process " << current.getName() << ":\n";
 					//	time+=def;
 						mem.addBF(current);
 						mem.printMem();
+
+						lastDepart += def;
 
 						updateTimes(processes, def);
 					}
@@ -216,7 +218,7 @@ void bf(std::vector<process> processes){
 		}
 	time++;
 	}
-	std::cout << "time " << time-1 << "ms: Simulator ended (Contiguous -- Best-Fit)\n";
+	std::cout << "time " << time-1 << "ms: Simulator ended (Contiguous -- Best-Fit)\n\n";
 }
 
 
@@ -252,10 +254,12 @@ void wf(std::vector<process> processes){
 						int def = mem.defrag(time);//prints the defrag statement here
 						time += def;
 						mem.printMem();
-						std::cout << "time " << time << "ms: Placed process " << current.getName() << ": \n";
+						std::cout << "time " << time << "ms: Placed process " << current.getName() << ":\n";
 					//	time+=def;
 						mem.addWF(current);
 						mem.printMem();
+
+						lastDepart += def;
 
 						updateTimes(processes, def);
 					}
@@ -276,7 +280,7 @@ void wf(std::vector<process> processes){
 	time++;
 	}
 
-	std::cout << "time " << time-1 << "ms: Simulator ended (Contiguous -- Worst-Fit)\n";
+	std::cout << "time " << time-1 << "ms: Simulator ended (Contiguous -- Worst-Fit)\n\n";
 }
 
 
