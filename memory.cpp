@@ -35,13 +35,37 @@ process::process(std::string string){
     	std::string strArrival = token.substr(0, pos2);
     	std::string strDeparture = token.substr(pos2+delim2.length(), token.length());
     	string.erase(0, pos + delim.length());
-
-    	arrivalTimes.push_back(atoi(strArrival.c_str()));
-    	departureTimes.push_back(atoi(strDeparture.c_str()));
+    	int arrival = atoi(strArrival.c_str());
+    	int depart = atoi(strDeparture.c_str());
+    	arrivalTimes.push_back(arrival);
+    	departureTimes.push_back(depart+arrival);
 	}
 
 }
 
+void process::update(int time){
+	int i;
+	for (i = 0; i < arrivalTimes.size(); i++){
+		arrivalTimes[i]+=time;
+	}
+	for (i = 0; i < departureTimes.size(); i++){
+		departureTimes[i]+=time;
+	}
+}
+
+void process::removeArrival(){
+	for (int i = 0; i < arrivalTimes.size()-1; i++){
+		arrivalTimes[i] = arrivalTimes[i+1];
+	}
+//	arrivalTimes[arrivalTimes.size()-1] = 0;
+}
+
+void process::removeDeparture(){
+	for (int i = 0; i < arrivalTimes.size()-1; i++){
+		departureTimes[i] = departureTimes[i+1];
+	}
+//	departureTimes[arrivalTimes.size()-1] = 0;
+}
 
 void memory::test(){//testing function until inputs are handled
 	flat[6] = 'A';
@@ -164,7 +188,6 @@ int memory::addNF(process p){
 		}
 		if (start == totalFrames){
 			queue.push_back('.');
-			std::cout << "here\n\n";
 			if (addNF2(p) == 1){
 				return 1;
 			}
@@ -193,7 +216,6 @@ int memory::addNF(process p){
 			start++;
 			if (start == totalFrames){
 				queue.push_back('.');
-				std::cout << "here\n\n";
 				if (addNF2(p) == 1){
 					return 1;
 				}
@@ -356,8 +378,6 @@ int memory::remove(process p){
 		}
 	}
 	updateDisplay();
-	std::cout << "Removed process " << p.getName() << "\n";
-	printMem();
 	//top of the queue always needs to be a period but want to eliminate extra periods
 	//added 
 	queue.remove(toRemove);

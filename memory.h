@@ -12,14 +12,21 @@ public:
 
 	int getSize(){return size;}
 	char getName(){return name;}
+	int arrivals(){return arrivalTimes.size();}
+	int departures(){return departureTimes.size();}
 	int getArrival(int i) {return arrivalTimes[i];}
 	int getDeparture(int i) {return departureTimes[i];}
-	void removeArrival(int i) { arrivalTimes.erase(arrivalTimes.begin()+i);}
-	void removeDeparture(int i) { departureTimes.erase(departureTimes.begin()+i);}
+	int getCurDep(){return currentDepart;}
+	void setDepart(int i){currentDepart = i;}
+	void departCount(){currentDepart--;}
+	void removeArrival();
+	void removeDeparture();
+	void update(int time);
 
 private:
 	int size;
 	char name;
+	int currentDepart;
 	std::vector<int> arrivalTimes;
 	std::vector<int> departureTimes;
 };
