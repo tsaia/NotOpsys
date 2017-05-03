@@ -212,8 +212,16 @@ int main(int argc, char** argv){
 	printf("TEST: GOT %d proccesses!\n", processes.size());
 
 	for (int i=0; i<processes.size(); i++){
-		printf("TEST: process %d = %c\n", i, processes[i].getName());
+		printf("TEST: process %d = %c, size=%d\n", i, processes[i].getName(), processes[i].getSize());
+
+		for (int j=0; j<processes[i].getTimesSize(); j++){
+			printf("\t%d arrival:'%d' departure:'%d'\n", j, processes[i].getArrival(j), processes[i].getDeparture(j));
+		}
 	}
+	fflush(stdout);
+	fflush (stderr);
+	
+
 
 	// //queue or something to do processes
 	// //map of maps?? map<int time, map<process, string action> >

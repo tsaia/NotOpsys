@@ -14,10 +14,12 @@ process::process(std::string string){
 	std::string delim2 = "/";
 
 	// get the label/name char
+	
 	pos = string.find(delim);
 	std::string strname = string.substr(0, pos);
 	name=strname[0];
 	string.erase(0, pos+delim.length());
+	
 
 	// get the size
 	pos = string.find(delim);
@@ -40,6 +42,16 @@ process::process(std::string string){
     	departureTimes.push_back(atoi(strDeparture.c_str()));
 	}
 
+	//get the last one
+
+	// breakup arrival and departure times
+	int pos2 = string.find(delim2);
+	std::string strArrival = string.substr(0, pos2);
+	std::string strDeparture = string.substr(pos2+delim2.length(), string.length());
+	////string.erase(0, pos + delim.length());
+
+	arrivalTimes.push_back(atoi(strArrival.c_str()));
+	departureTimes.push_back(atoi(strDeparture.c_str()));
 }
 
 

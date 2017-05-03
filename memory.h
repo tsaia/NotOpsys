@@ -11,6 +11,7 @@ public:
 	process(std::string);
 
 	int getSize(){return size;}
+	int getTimesSize(){return arrivalTimes.size();}
 	char getName(){return name;}
 	int getArrival(int i) {return arrivalTimes[i];}
 	int getDeparture(int i) {return departureTimes[i];}
