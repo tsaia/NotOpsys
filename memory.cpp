@@ -50,9 +50,10 @@ process::process(std::string string){
 	std::string strArrival = string.substr(0, pos2);
 	std::string strDeparture = string.substr(pos2+delim2.length(), string.length());
 	////string.erase(0, pos + delim.length());
-
-	arrivalTimes.push_back(atoi(strArrival.c_str()));
-	departureTimes.push_back(atoi(strDeparture.c_str()));
+	int arrival = atoi(strArrival.c_str());
+	int depart = atoi(strDeparture.c_str());
+	arrivalTimes.push_back(arrival);
+	departureTimes.push_back(depart+arrival);
 
 }
 

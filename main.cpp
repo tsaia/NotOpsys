@@ -99,10 +99,15 @@ void updateTimes(std::vector<process> &processes, int add){
 }
 
 void nf(std::vector<process> processes){
+	std::cout << "time 0ms: Simulator started (Contiguous -- Next-Fit)\n";
 	memory mem(8,32);
 	int time = 0, result = 0;
 	process current('.', 0);
-	while (time < 3000){//temp for now
+	int lastDepart = 0;
+	for (int j = 0; j < processes.size(); j++){
+		lastDepart = std::max(lastDepart, processes[j].lastD());
+	}
+	while (time < lastDepart+1){//temp for now
 		for (int i = 0; i < processes.size(); i++){
 			current = processes[i];
 		//		std::cout << "TIME: " << time << "\tPROCESS: " << current.getName() << "\tARRIVAL: "<< current.getArrival(0) << "\n";
@@ -127,6 +132,7 @@ void nf(std::vector<process> processes){
 					//	time+=def;
 						mem.addNF(current);
 						mem.printMem();
+						lastDepart += def;
 
 						updateTimes(processes, def);
 					}
@@ -135,16 +141,187 @@ void nf(std::vector<process> processes){
 			}
 			for (int q = 0; q < current.departures(); q++){
 				if (current.getDeparture(q) == time){
-					mem.remove(current);
+					int removed = mem.remove(current);
 					current.removeDeparture();
-					std::cout << "time " << time << "ms: Process " << current.getName() << " removed:\n";
-					mem.printMem();
+					if (removed > 0){
+						std::cout << "time " << time << "ms: Process " << current.getName() << " removed:\n";
+						mem.printMem();
+					}
 				}
 			}
 		}
 	time++;
 	}
+	std::cout << "time " << time-1 << " ms: Simulator ended (Contiguous -- Next-Fit)\n";
 }
+
+void bf(std::vector<process> processes){
+
+	std::cout << "time 0ms: Simulator started (Contiguous -- Best-Fit)\n";
+	memory mem(8,32);
+	int time = 0, result = 0;
+	process current('.', 0);
+	int lastDepart = 0;
+	for (int j = 0; j < processes.size(); j++){
+		lastDepart = std::max(lastDepart, processes[j].lastD());
+	}
+	while (time < lastDepart+1){//temp for now
+		for (int i = 0; i < processes.size(); i++){
+			current = processes[i];
+		//		std::cout << "TIME: " << time << "\tPROCESS: " << current.getName() << "\tARRIVAL: "<< current.getArrival(0) << "\n";
+			for (int q = 0; q < current.arrivals(); q++){
+				if (current.getArrival(q) == time){
+					std::cout << "time " << time << "ms: Process " << current.getName() << " arrived (requires "
+						<< current.getSize() << " frames)\n";
+					result = mem.addBF(current);
+					if (result == 0){
+						std::cout << "time "<< time << "ms: Cannot place process " << current.getName() << " -- skipped!\n";
+					}
+					else if (result == 1){
+						std::cout << "time "<< time << "ms: Placed process " << current.getName() << ":\n";
+						mem.printMem();
+					}
+					else if (result == 2){
+						std::cout << "time "<< time << "ms: Cannot place process " << current.getName() << " -- starting defragmentation\n";
+						int def = mem.defrag(time);//prints the defrag statement here
+						time += def;
+						mem.printMem();
+						std::cout << "time " << time << "ms: Placed process " << current.getName() << ": \n";
+					//	time+=def;
+						mem.addBF(current);
+						mem.printMem();
+
+						updateTimes(processes, def);
+					}
+					current.removeArrival();
+				}
+			}
+			for (int q = 0; q < current.departures(); q++){
+				if (current.getDeparture(q) == time){
+					int removed = mem.remove(current);
+					current.removeDeparture();
+					if (removed > 0){//lazy fix
+						std::cout << "REMOVED: " << removed << "\n\n\n";
+						std::cout << "time " << time << "ms: Process " << current.getName() << " removed:\n";
+						mem.printMem();
+					}
+				}
+			}
+		}
+	time++;
+	}
+	std::cout << "time " << time-1 << " ms: Simulator ended (Contiguous -- Best-Fit)\n";
+}
+
+
+void wf(std::vector<process> processes){
+
+	std::cout << "time 0ms: Simulator started (Contiguous -- Worst-Fit)\n";
+	memory mem(8,32);
+	int time = 0, result = 0;
+	process current('.', 0);
+	int lastDepart = 0;
+	for (int j = 0; j < processes.size(); j++){
+		lastDepart = std::max(lastDepart, processes[j].lastD());
+	}
+	while (time < lastDepart+1){//temp for now
+		for (int i = 0; i < processes.size(); i++){
+			current = processes[i];
+		//		std::cout << "TIME: " << time << "\tPROCESS: " << current.getName() << "\tARRIVAL: "<< current.getArrival(0) << "\n";
+			for (int q = 0; q < current.arrivals(); q++){
+				if (current.getArrival(q) == time){
+					std::cout << "time " << time << "ms: Process " << current.getName() << " arrived (requires "
+						<< current.getSize() << " frames)\n";
+					result = mem.addWF(current);
+					if (result == 0){
+						std::cout << "time "<< time << "ms: Cannot place process " << current.getName() << " -- skipped!\n";
+					//	current.removeDeparture();
+					}
+					else if (result == 1){
+						std::cout << "time "<< time << "ms: Placed process " << current.getName() << ":\n";
+						mem.printMem();
+					}
+					else if (result == 2){
+						std::cout << "time "<< time << "ms: Cannot place process " << current.getName() << " -- starting defragmentation\n";
+						int def = mem.defrag(time);//prints the defrag statement here
+						time += def;
+						mem.printMem();
+						std::cout << "time " << time << "ms: Placed process " << current.getName() << ": \n";
+					//	time+=def;
+						mem.addWF(current);
+						mem.printMem();
+
+						updateTimes(processes, def);
+					}
+					current.removeArrival();
+				}
+			}
+			for (int q = 0; q < current.departures(); q++){
+				if (current.getDeparture(q) == time){
+					int removed = mem.remove(current);
+					current.removeDeparture();
+					if (removed > 0){
+						std::cout << "time " << time << "ms: Process " << current.getName() << " removed:\n";
+						mem.printMem();
+					}
+				}
+			}
+		}
+	time++;
+	}
+
+	std::cout << "time " << time-1 << " ms: Simulator ended (Contiguous -- Worst-Fit)\n";
+}
+
+
+
+void nc(std::vector<process> processes){
+
+	std::cout << "time 0ms: Simulator started (Non-contiguous)\n";
+	memory mem(8,32);
+	int time = 0, result = 0;
+	process current('.', 0);
+	int lastDepart = 0;
+	for (int j = 0; j < processes.size(); j++){
+		lastDepart = std::max(lastDepart, processes[j].lastD());
+	}
+	while (time < lastDepart+1){//temp for now
+		for (int i = 0; i < processes.size(); i++){
+			current = processes[i];
+		//		std::cout << "TIME: " << time << "\tPROCESS: " << current.getName() << "\tARRIVAL: "<< current.getArrival(0) << "\n";
+			for (int q = 0; q < current.arrivals(); q++){
+				if (current.getArrival(q) == time){
+					std::cout << "time " << time << "ms: Process " << current.getName() << " arrived (requires "
+						<< current.getSize() << " frames)\n";
+					result = mem.addNC(current);
+					if (result == 0){
+						std::cout << "time "<< time << "ms: Cannot place process " << current.getName() << " -- skipped!\n";
+					//	current.removeDeparture();
+					}
+					else if (result == 1){
+						std::cout << "time "<< time << "ms: Placed process " << current.getName() << ":\n";
+						mem.printMem();
+					}
+					current.removeArrival();
+				}
+			}
+			for (int q = 0; q < current.departures(); q++){
+				if (current.getDeparture(q) == time){
+					int removed = mem.remove(current);
+					current.removeDeparture();
+					if (removed > 0){
+						std::cout << "time " << time << "ms: Process " << current.getName() << " removed:\n";
+						mem.printMem();
+					}
+				}
+			}
+		}
+	time++;
+	}
+
+	std::cout << "time " << time-1 << " ms: Simulator ended (Non-contiguous)\n";
+}
+
 
 void teststuff(){
 	//this is all just testing stuff
@@ -251,7 +428,9 @@ int main(int argc, char** argv){
 
 
 	nf(processes);
-	std::cout << "time " << time << "ms: Simulator ended (Contiguous -- Next-Fit)\n";
+	bf(processes);
+	wf(processes);
+	nc(processes);
 
 	//teststuff();
 	return 1;

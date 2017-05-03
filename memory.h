@@ -18,11 +18,13 @@ public:
 	int getArrival(int i) {return arrivalTimes[i];}
 	int getDeparture(int i) {return departureTimes[i];}
 	int getCurDep(){return currentDepart;}
+	int lastD(){return departureTimes[departureTimes.size()-1];}
 	void setDepart(int i){currentDepart = i;}
 	void departCount(){currentDepart--;}
 	void removeArrival();
 	void removeDeparture();
 	void update(int time);
+
 
 private:
 	int size;
