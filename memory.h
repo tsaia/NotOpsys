@@ -8,12 +8,20 @@ class process{
 public:
 	process();
 	process(char n, int s): size(s), name(n){};
+	process(std::string);
+
 	int getSize(){return size;}
 	char getName(){return name;}
+	int getArrival(int i) {return arrivalTimes[i];}
+	int getDeparture(int i) {return departureTimes[i];}
+	void removeArrival(int i) { arrivalTimes.erase(arrivalTimes.begin()+i);}
+	void removeDeparture(int i) { departureTimes.erase(departureTimes.begin()+i);}
 
 private:
 	int size;
 	char name;
+	std::vector<int> arrivalTimes;
+	std::vector<int> departureTimes;
 };
 
 class memory

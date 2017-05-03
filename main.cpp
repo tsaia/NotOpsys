@@ -7,6 +7,69 @@
 #include <exception>
 #include "memory.h"
 
+#include <string>
+#include <cstdlib>
+#include <functional> 
+#include <cctype>
+#include <locale>
+
+std::string trim (std::string str){
+	int pos=0;
+	while (str[pos] == ' '){
+		pos++;
+	}
+
+	str=str.substr(pos);
+
+	pos = str.length();
+	while (str[pos] == ' '){
+		pos--;
+	}
+
+	str=str.substr(0, pos);
+
+	return str;
+}
+
+int readfile(char* file, std::vector<process> processes){
+
+	std::string line;
+
+	std::ifstream ipfile (file);
+
+	if (ipfile.is_open())
+	{
+		int numProc=-1;
+
+		while (getline (ipfile,line) && numProc!=0){
+			//remove whitespace from ends
+			line = trim(line);
+
+			// skip comment lines
+			if (line[0]=='#'){
+				continue;
+			}
+
+			// first line is #of processes
+			if (numProc==-1){
+				numProc = atoi((const char*) &line[0]);
+			}
+
+			// read in a single process with all arrivials and departures
+			processes.push_back(process(line));
+
+			numProc--;			
+		}
+			
+
+		ipfile.close();
+	}
+	else{
+		perror("ERROR could not open input file '%s' for reading\n");
+		exit(EXIT_FAILURE);
+	}
+
+}
 
 
 void add(memory &nfmem, process &p){
@@ -100,7 +163,57 @@ int main(int argc, char** argv){
 // 		process P(name, size);
 // 		std::cout << line << "\n";
 // 	}
+
+	if(argc < 2) {
+		perror("ERROR Invalid arguments\n");
+		exit(EXIT_FAILURE);
+	}
 	int time = 0;
+	std::vector<process> processes;
+
+	// take the args and read the file into our vector of proccesses
+	std::string line;
+	std::ifstream ipfile (argv[1]);
+
+	if (ipfile.is_open())
+	{
+		int numProc=-1;
+
+		while (getline (ipfile,line) && numProc!=0){
+			//remove whitespace from ends
+			line = trim(line);
+
+			// skip comment lines
+			if (line[0]=='#'){
+				continue;
+			}
+
+			// first line is #of processes
+			if (numProc==-1){
+				numProc = atoi((const char*) &line[0]);
+				continue;
+			}
+
+			// read in a single process with all arrivials and departures
+			processes.push_back(process(line));
+
+			numProc--;			
+		}
+			
+
+		ipfile.close();
+	}
+	else{
+		perror("ERROR could not open input file '%s' for reading\n");
+		exit(EXIT_FAILURE);
+	}
+	// end ip reading
+
+	printf("TEST: GOT %d proccesses!\n", processes.size());
+
+	for (int i=0; i<processes.size(); i++){
+		printf("TEST: process %d = %c\n", i, processes[i].getName());
+	}
 
 	// //queue or something to do processes
 	// //map of maps?? map<int time, map<process, string action> >

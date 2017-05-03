@@ -7,6 +7,42 @@
 
 #define t_memmove 1
 
+process::process(std::string string){
+	//the input string is in the format: 'A 45 0/350 400/50'...
+	int pos;
+	std::string delim = " ";
+	std::string delim2 = "/";
+
+	// get the label/name char
+	pos = string.find(delim);
+	std::string strname = string.substr(0, pos);
+	name=strname[0];
+	string.erase(0, pos+delim.length());
+
+	// get the size
+	pos = string.find(delim);
+	std::string strsize = string.substr(0, pos);
+	std::string::size_type sz;  
+  	size = atoi(strsize.c_str());
+	string.erase(0, pos+delim.length());
+
+
+	// get arrivial and departure times
+	while ((pos = string.find(delim)) != (int)std::string::npos) {
+    	std::string token = string.substr(0, pos);
+    	// breakup arrival and departure times
+    	int pos2 = token.find(delim2);
+    	std::string strArrival = token.substr(0, pos2);
+    	std::string strDeparture = token.substr(pos2+delim2.length(), token.length());
+    	string.erase(0, pos + delim.length());
+
+    	arrivalTimes.push_back(atoi(strArrival.c_str()));
+    	departureTimes.push_back(atoi(strDeparture.c_str()));
+	}
+
+}
+
+
 void memory::test(){//testing function until inputs are handled
 	flat[6] = 'A';
 	flat[7] = 'A';
