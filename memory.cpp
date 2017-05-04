@@ -14,17 +14,17 @@ process::process(std::string string){
 	std::string delim2 = "/";
 
 	// get the label/name char
-	
+
 	pos = string.find(delim);
 	std::string strname = string.substr(0, pos);
 	name=strname[0];
 	string.erase(0, pos+delim.length());
-	
+
 
 	// get the size
 	pos = string.find(delim);
 	std::string strsize = string.substr(0, pos);
-	std::string::size_type sz;  
+	std::string::size_type sz;
   	size = atoi(strsize.c_str());
 	string.erase(0, pos+delim.length());
 
@@ -161,7 +161,7 @@ int memory::addNF2(process p){
 			if (test+start >= totalFrames || flat[start+test] != '.'){
 				canAdd = false;
 				break;
-			}	
+			}
 			test++;
 		}
 		if (canAdd){
@@ -171,6 +171,8 @@ int memory::addNF2(process p){
 				test++;
 				openFrames--;
 			}
+			nfStart = test+start;
+			queue.push_back(toAdd);
 			updateDisplay();
 			return 1;
 		}else{
@@ -186,22 +188,13 @@ int memory::addNF2(process p){
 int memory::addNF(process p){
 	//RETURN VALUES: 0 - CAN'T ADD, 1 - ADDED, 2 - DEFRAG NEEDED
 	//assume process has size and name
-	char prev = queue.back();
 	char toAdd = p.getName();
 	int size = p.getSize();
 	if (size > openFrames){
 		return 0;
 	}
-	int start = 0, test = 0;
+	int start = nfStart, test = 0;
 	while (true){//I guess it could be while (start < totalFrames) but eh
-		if(prev != '.'){
-			while (start < totalFrames && flat[start]!=prev){
-				start++;
-			}
-			while (start < totalFrames && flat[start]==prev){
-				start++;				
-			}
-		}
 		if (start == totalFrames){
 			queue.push_back('.');
 			if (addNF2(p) == 1){
@@ -214,7 +207,7 @@ int memory::addNF(process p){
 			if (test+start >= totalFrames || flat[start+test] != '.'){
 				canAdd = false;
 				break;
-			}	
+			}
 			test++;
 		}
 		if (canAdd){
@@ -226,6 +219,7 @@ int memory::addNF(process p){
 			}
 
 			queue.push_back(toAdd);
+			nfStart = test+start;
 			updateDisplay();
 			return 1;
 		}else{
@@ -278,9 +272,9 @@ int memory::addBF(process p){
 		}
 
 		if (test == totalFrames){
-			//if the current gap goes all the way to the end, 
+			//if the current gap goes all the way to the end,
 			//don't count all the smaller gaps within that
-			break;	
+			break;
 		}
 		start = test;
 		//move to where the current gap ends
@@ -338,9 +332,9 @@ int memory::addWF(process p){
 		}
 
 		if (test == totalFrames){
-			//if the current gap goes all the way to the end, 
+			//if the current gap goes all the way to the end,
 			//don't count all the smaller gaps within that
-			break;	
+			break;
 		}
 		start = test;
 		//move to where the current gap ends
@@ -395,7 +389,7 @@ int memory::remove(process p){
 	}
 	updateDisplay();
 	//top of the queue always needs to be a period but want to eliminate extra periods
-	//added 
+	//added
 	queue.remove(toRemove);
 	queue.remove('.');
 	queue.push_front('.');
@@ -420,7 +414,7 @@ int memory::defrag(int time){
 			break;
 			//for when the last frames are dots
 		}
-		char replaceChar = flat[replace]; 
+		char replaceChar = flat[replace];
 		moved.push_back(replaceChar);
 		replaceuntil = replace;
 		while (flat[replaceuntil] == flat[replace]){
@@ -439,12 +433,12 @@ int memory::defrag(int time){
 	std::cout << "time " << time+timetaken << "ms: Defragmentation complete (moved " << timetaken << " frames:";
 	for (unsigned int i = 0; i < moved.size(); i++){
 		std::cout << " " << moved[i];
-		if (i != moved.size() - 1){//formatting is dumb 
+		if (i != moved.size() - 1){//formatting is dumb
 			std::cout << ",";
 		}
 	}
 	std::cout << ")\n";
-	updateDisplay();	
+	updateDisplay();
 	return timetaken;
 }
 

@@ -47,6 +47,7 @@ public:
 		flat = v2;
 		openFrames = l*f;
 		totalFrames = l*f;
+		nfStart = 0;
 
 		queue.push_back('.');
 	};
@@ -63,20 +64,17 @@ public:
 	int addNC(process p);
 
 private:
-	
-	int lines;
-	int frames;
-	int totalFrames;
+
+	int lines, frames,totalFrames,openFrames,nfStart;
 
 	//flat is a 1d vector that's easier to work with for actually manipulating the data
 	//display is the 2d one that's printed each time
 	std::vector<char> flat;
 	std::vector<std::vector<char> > display;
-	int openFrames;
 
 	//add a queueueue for most recent memory
 	std::list<char> queue;
 	//remind me to actually clear the queue sometime lol
 
-	
+
 };

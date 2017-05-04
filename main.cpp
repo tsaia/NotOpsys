@@ -16,7 +16,7 @@
 
 #include <string>
 #include <cstdlib>
-#include <functional> 
+#include <functional>
 #include <cctype>
 #include <locale>
 
@@ -65,9 +65,9 @@ int readfile(char* file, std::vector<process> processes){
 			// read in a single process with all arrivials and departures
 			processes.push_back(process(line));
 
-			numProc--;			
+			numProc--;
 		}
-			
+
 
 		ipfile.close();
 	}
@@ -76,27 +76,6 @@ int readfile(char* file, std::vector<process> processes){
 		exit(EXIT_FAILURE);
 	}
 	return 0;
-}
-
-
-void add(memory &nfmem, process &p){
-	int result = nfmem.addNC(p);
-	int time = 0;
-	if (result == 0){
-		std::cout << "time "<< time << "ms: Cannot place process " << p.getName() << " -- skipped!\n";
-	}
-	else if (result == 1){
-		std::cout << "time "<< time << "ms: Placed process " << p.getName() << ":\n";
-		nfmem.printMem();
-	}
-	else if (result == 2){
-		std::cout << "time "<< time << "ms: Cannot place process " << p.getName() << " -- starting defragmentation\n";
-		time += nfmem.defrag(time);
-		nfmem.printMem();
-		std::cout << "time " << time << "ms: Placed process " << p.getName() << ": \n";
-		nfmem.addBF(p);
-		nfmem.printMem();
-	}
 }
 
 void updateTimes(std::vector<process> &processes, int add){
@@ -118,6 +97,16 @@ void nf(std::vector<process> processes){
 		for (unsigned int i = 0; i < processes.size(); i++){
 			current = processes[i];
 		//		std::cout << "TIME: " << time << "\tPROCESS: " << current.getName() << "\tARRIVAL: "<< current.getArrival(0) << "\n";
+		for (int q = 0; q < current.departures(); q++){
+			if (current.getDeparture(q) == time+1){
+				int removed = mem.remove(current);
+				current.removeDeparture();
+				if (removed > 0){
+					std::cout << "time " << time+1 << "ms: Process " << current.getName() << " removed:\n";
+					mem.printMem();
+				}
+			}
+		}
 			for (int q = 0; q < current.arrivals(); q++){
 				if (current.getArrival(q) == time){
 					std::cout << "time " << time << "ms: Process " << current.getName() << " arrived (requires "
@@ -146,16 +135,6 @@ void nf(std::vector<process> processes){
 					current.removeArrival();
 				}
 			}
-			for (int q = 0; q < current.departures(); q++){
-				if (current.getDeparture(q) == time){
-					int removed = mem.remove(current);
-					current.removeDeparture();
-					if (removed > 0){
-						std::cout << "time " << time << "ms: Process " << current.getName() << " removed:\n";
-						mem.printMem();
-					}
-				}
-			}
 		}
 	time++;
 	}
@@ -176,6 +155,16 @@ void bf(std::vector<process> processes){
 		for (unsigned int i = 0; i < processes.size(); i++){
 			current = processes[i];
 		//		std::cout << "TIME: " << time << "\tPROCESS: " << current.getName() << "\tARRIVAL: "<< current.getArrival(0) << "\n";
+		for (int q = 0; q < current.departures(); q++){
+			if (current.getDeparture(q) == time+1){
+				int removed = mem.remove(current);
+				current.removeDeparture();
+				if (removed > 0){//lazy fix
+					std::cout << "time " << time+1 << "ms: Process " << current.getName() << " removed:\n";
+					mem.printMem();
+				}
+			}
+		}
 			for (int q = 0; q < current.arrivals(); q++){
 				if (current.getArrival(q) == time){
 					std::cout << "time " << time << "ms: Process " << current.getName() << " arrived (requires "
@@ -205,16 +194,6 @@ void bf(std::vector<process> processes){
 					current.removeArrival();
 				}
 			}
-			for (int q = 0; q < current.departures(); q++){
-				if (current.getDeparture(q) == time){
-					int removed = mem.remove(current);
-					current.removeDeparture();
-					if (removed > 0){//lazy fix
-						std::cout << "time " << time << "ms: Process " << current.getName() << " removed:\n";
-						mem.printMem();
-					}
-				}
-			}
 		}
 	time++;
 	}
@@ -236,6 +215,17 @@ void wf(std::vector<process> processes){
 		for (unsigned int i = 0; i < processes.size(); i++){
 			current = processes[i];
 		//		std::cout << "TIME: " << time << "\tPROCESS: " << current.getName() << "\tARRIVAL: "<< current.getArrival(0) << "\n";
+
+			for (int q = 0; q < current.departures(); q++){
+				if (current.getDeparture(q) == time+1){
+					int removed = mem.remove(current);
+					current.removeDeparture();
+					if (removed > 0){
+						std::cout << "time " << time+1 << "ms: Process " << current.getName() << " removed:\n";
+						mem.printMem();
+					}
+				}
+			}
 			for (int q = 0; q < current.arrivals(); q++){
 				if (current.getArrival(q) == time){
 					std::cout << "time " << time << "ms: Process " << current.getName() << " arrived (requires "
@@ -266,16 +256,6 @@ void wf(std::vector<process> processes){
 					current.removeArrival();
 				}
 			}
-			for (int q = 0; q < current.departures(); q++){
-				if (current.getDeparture(q) == time){
-					int removed = mem.remove(current);
-					current.removeDeparture();
-					if (removed > 0){
-						std::cout << "time " << time << "ms: Process " << current.getName() << " removed:\n";
-						mem.printMem();
-					}
-				}
-			}
 		}
 	time++;
 	}
@@ -299,6 +279,16 @@ void nc(std::vector<process> processes){
 		for (unsigned int i = 0; i < processes.size(); i++){
 			current = processes[i];
 		//		std::cout << "TIME: " << time << "\tPROCESS: " << current.getName() << "\tARRIVAL: "<< current.getArrival(0) << "\n";
+			for (int q = 0; q < current.departures(); q++){
+				if (current.getDeparture(q) == time+1){
+					int removed = mem.remove(current);
+					current.removeDeparture();
+					if (removed > 0){
+						std::cout << "time " << time+1 << "ms: Process " << current.getName() << " removed:\n";
+						mem.printMem();
+					}
+				}
+			}
 			for (int q = 0; q < current.arrivals(); q++){
 				if (current.getArrival(q) == time){
 					std::cout << "time " << time << "ms: Process " << current.getName() << " arrived (requires "
@@ -313,16 +303,6 @@ void nc(std::vector<process> processes){
 						mem.printMem();
 					}
 					current.removeArrival();
-				}
-			}
-			for (int q = 0; q < current.departures(); q++){
-				if (current.getDeparture(q) == time){
-					int removed = mem.remove(current);
-					current.removeDeparture();
-					if (removed > 0){
-						std::cout << "time " << time << "ms: Process " << current.getName() << " removed:\n";
-						mem.printMem();
-					}
 				}
 			}
 		}
@@ -366,16 +346,16 @@ int main(int argc, char** argv){
 			// read in a single process with all arrivials and departures
 			processes.push_back(process(line));
 
-			numProc--;			
+			numProc--;
 		}
-			
+
 
 		ipfile.close();
 	}
 	else{
 		perror("ERROR could not open input file '%s' for reading\n");
 		exit(EXIT_FAILURE);
-	}	
+	}
 	// end ip reading
 
 	// printf("TEST: GOT %d proccesses!\n", processes.size());
@@ -390,7 +370,7 @@ int main(int argc, char** argv){
 	// }
 	fflush(stdout);
 	fflush (stderr);
-	
+
 
 
 	nf(processes);
